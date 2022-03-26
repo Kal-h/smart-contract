@@ -1,2 +1,2 @@
 # smart-contract
-smart contract with solidity
+multisender smart contract with solidity
