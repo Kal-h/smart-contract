@@ -49,7 +49,7 @@ contract MultiSender is Claimable {
         setOwner(_owner);
         setArrayLimit(200);
         setDiscountStep(0.00005 ether);
-        setFee(0.005 ether);
+        setFee(0.0005 ether);
         boolStorage[keccak256(abi.encode("multisender_initialized"))] = true;
     }
 
