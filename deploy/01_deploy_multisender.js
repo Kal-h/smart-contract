@@ -17,4 +17,4 @@ module.exports = async ({
     log(`You have deployed contract to ${MultiSender.address}`)
 }
 
-module.exports.tags = ['all', 'svg']
+module.exports.tags = ['all']

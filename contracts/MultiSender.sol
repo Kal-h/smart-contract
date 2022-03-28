@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.0;
 
-import "./external/OwnedAbilityStorage.sol";
 import "./Claimable.sol";
 import "./libraries/SafeMath.sol";
+import "hardhat/console.sol";
 
 /**
  * @title ERC20
@@ -24,13 +24,14 @@ interface IERC721 {
   function safeTransferFrom(address from, address to, uint256 tokenId) external;
 }
 
-contract MultiSender is OwnedAbilityStorage, Claimable {
+contract MultiSender is Claimable {
     using SafeMath for uint256;
 
     event Multisended(uint256 total, address tokenAddress);
     event ClaimedTokens(address token, address owner, uint256 balance);
 
     modifier hasFee() {
+        console.log("into hasFree func");
         if (currentFee(msg.sender) > 0) {
             require(msg.value >= currentFee(msg.sender));
         }
@@ -48,12 +49,12 @@ contract MultiSender is OwnedAbilityStorage, Claimable {
         setOwner(_owner);
         setArrayLimit(200);
         setDiscountStep(0.00005 ether);
-        setFee(0.05 ether);
-        boolStorage[keccak256(abi.encode("rs_multisender_initialized"))] = true;
+        setFee(0.005 ether);
+        boolStorage[keccak256(abi.encode("multisender_initialized"))] = true;
     }
 
     function initialized() public view returns (bool) {
-        return boolStorage[keccak256(abi.encode("rs_multisender_initialized"))];
+        return boolStorage[keccak256(abi.encode("multisender_initialized"))];
     }
  
     function txCount(address customer) public view returns(uint256) {
@@ -83,6 +84,7 @@ contract MultiSender is OwnedAbilityStorage, Claimable {
     }
 
     function currentFee(address _customer) public view returns(uint256) {
+        console.log("into currentFee func");
         if (fee() > discountRate(msg.sender)) {
             return fee().sub(discountRate(_customer));
         } else {
@@ -101,8 +103,8 @@ contract MultiSender is OwnedAbilityStorage, Claimable {
     }
 
     function multisendTokenERC20(IERC20 _token, address payable[] calldata _contributors, uint256[] calldata _balances) public hasFee payable {
-        require(_contributors.length == _balances.length, "Receivers and IDs are different length");
-        if (address(_token) == 0x000000000000000000000000000000000000bEEF){
+        require(_contributors.length == _balances.length, "Receivers and balances are different length");
+        if (address(_token) == 0x0000000000000000000000000000000000000000){
             multisendEther(_contributors, _balances);
         } else {
             uint256 total = 0;
@@ -132,6 +134,7 @@ contract MultiSender is OwnedAbilityStorage, Claimable {
     }
 
     function multisendEther(address payable[] calldata _contributors, uint256[] calldata _balances) public payable {
+        console.log("into multisendEther func");
         uint256 total = msg.value;
         uint256 feeValue = currentFee(msg.sender);
         require(total >= feeValue);
@@ -144,12 +147,11 @@ contract MultiSender is OwnedAbilityStorage, Claimable {
             _contributors[i].transfer(_balances[i]);
         }
         setTxCount(msg.sender, txCount(msg.sender).add(1));
-        emit Multisended(msg.value, 0x000000000000000000000000000000000000bEEF);
+        emit Multisended(msg.value, 0x0000000000000000000000000000000000000000);
     }
 
     function claimTokens(address _token) public onlyOwner {
         if (_token == address(0x0)) {
-            // owner().transfer(this.balance);
             payable(owner()).transfer(address(this).balance);
             return;
         }

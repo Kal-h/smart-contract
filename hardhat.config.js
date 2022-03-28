@@ -33,14 +33,14 @@ module.exports = {
     localhost: {
       chainId: 31337
     },
-    rinkeby: {
-      url: RINKEBY_RPC_URL,
-      accounts: [`0x${PRIVATE_KEY}`]
-    }
+    // rinkeby: {
+    //   url: RINKEBY_RPC_URL,
+    //   accounts: [`0x${PRIVATE_KEY}`]
+    // }
   },
-  etherscan: {
-    apiKey: ETHERSCAN_API_KEY
-  },
+  // etherscan: {
+  //   apiKey: ETHERSCAN_API_KEY
+  // },
   solidity: {
     compilers: [
       {version: "0.8.0"},
